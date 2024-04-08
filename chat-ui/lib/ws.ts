@@ -1,7 +1,11 @@
 let ws: WebSocket;
 
 export const initializeWebSocket = () => {
-  ws = new WebSocket("ws://localhost:3001");
+  const BROKER_ADDRESS = process.env.NEXT_PUBLIC_BROKER_ADDRESS;
+  const BROKER_PORT = process.env.NEXT_PUBLIC_BROKER_PORT;
+  const url = `ws://${BROKER_ADDRESS}:${BROKER_PORT}`;
+  console.log(url);
+  ws = new WebSocket(url);
   ws.onopen = () => {
     console.log("WebSocket connection established");
   };
@@ -10,6 +14,9 @@ export const initializeWebSocket = () => {
   });
   ws.onclose = () => {
     console.log("WebSocket connection closed");
+  };
+  ws.onerror = (error) => {
+    console.error("WebSocket error: ", error);
   };
 };
 
