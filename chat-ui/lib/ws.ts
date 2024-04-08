@@ -30,7 +30,7 @@ export const closeWebSocket = () => {
 
 export const getWebSocketInstance = (): WebSocket => {
   if (!ws || ws.readyState !== ws.OPEN) {
-    throw new Error("WebSocket instance not initialized");
+    initializeWebSocket();
   }
   return ws;
 };
