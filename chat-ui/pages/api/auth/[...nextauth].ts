@@ -18,7 +18,7 @@ export const authOptions: AuthOptions = {
         type: MessageType.LOGIN,
         payload: user.email || "",
         sender: {
-          id: user.id!,
+          userId: user.id!,
           email: user.email!,
           name: user.name!,
         },

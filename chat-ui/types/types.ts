@@ -6,7 +6,7 @@ export enum MessageType {
 
 export type User = {
   email: string;
-  id?: string;
+  userId?: string;
   name?: string;
 };
 

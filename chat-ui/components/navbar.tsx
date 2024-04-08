@@ -10,13 +10,13 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 const Navbar = () => {
   const { data: session } = useSession();
 
-  const handleLogout = () => {
-    signOut();
+  const handleLogout = async () => {
+    await signOut();
     const ws = getWebSocketInstance();
     const message: UserMessage = {
       type: MessageType.LOGOUT,
       sender: {
-        id: session?.user?.id!,
+        userId: session?.user?.userId!,
         email: session?.user?.email!,
         name: session?.user?.name!,
       },
