@@ -22,6 +22,13 @@ public class LoadBalancer extends Thread {
       }
       String clientEmail = defaultMessage.getSender().getEmail();
       System.out.println("Received message from: " + clientEmail + " with type: " + defaultMessage.getType());
+      ServerHandler sH = ServerCache.getInstance().getNextServer();
+      if (sH != null) {
+        sH.send(defaultMessage);
+        System.out.println("Message sent to server: " + sH.getServerAddress());
+      } else {
+        System.out.println("No server available to process the request");
+      }
 
     } catch (IOException e) {
       throw new RuntimeException(e);

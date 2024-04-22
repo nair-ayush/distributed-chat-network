@@ -23,6 +23,13 @@
       "request": "launch",
       "mainClass": "com.distributed.App",
       "projectName": "messagebroker"
+    },
+    {
+      "type": "java",
+      "name": "Server",
+      "request": "launch",
+      "mainClass": "com.distributed.App",
+      "projectName": "server"
     }
   ]
 }

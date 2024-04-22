@@ -5,6 +5,5 @@ public enum MessageType {
   LOGIN,
   LOGOUT,
   CHAT_MESSAGE,
-  SERVER_JOINED,
-  SERVER_EXITED,
+  SERVER_LEFT
 }
