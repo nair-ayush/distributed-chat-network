@@ -10,6 +10,8 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 
+import com.distributed.brokers.ClientCache;
+import com.distributed.brokers.ClientHandler;
 import com.distributed.models.ChatMessage;
 import com.distributed.models.Message;
 import com.distributed.models.UserMessage;
@@ -28,7 +30,6 @@ public class ClientManager extends WebSocketServer {
 
   @Override
   public void onOpen(WebSocket conn, ClientHandshake handshake) {
-
     System.out.println("New connection from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
   }
 
@@ -96,6 +97,7 @@ public class ClientManager extends WebSocketServer {
       if (lbSocket.isConnected()) {
         System.out.println(
             "Connected to Load Balancer at " + lbSocket.getInetAddress().getHostAddress() + ":" + lbSocket.getPort());
+        System.out.println();
       }
     } catch (UnknownHostException e) {
       System.out.println("Unknown host: " + e.getMessage());
@@ -106,6 +108,14 @@ public class ClientManager extends WebSocketServer {
 
   private void handleUserMessage(WebSocket conn, UserMessage uMsg) {
     try {
+      ClientCache cache = ClientCache.getInstance();
+      ClientHandler client = cache.getClient(uMsg.getSender().getEmail());
+      if (client == null) {
+        client = new ClientHandler(uMsg.getSender(), conn);
+        cache.addClient(uMsg.getSender().getEmail(), client);
+      } else {
+        client.setWebSocket(conn);
+      }
       lbStream.writeObject(uMsg);
       lbStream.flush();
       lbStream.reset();
