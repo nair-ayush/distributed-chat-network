@@ -1,7 +1,6 @@
-import { getWebSocketInstance } from "@/lib/ws";
-import { MessageType, UserMessage } from "@/types/types";
+import { handleLogout } from "@/lib/auth";
 import { ExternalLink } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
@@ -10,23 +9,6 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 const Navbar = () => {
   const { data: session } = useSession();
 
-  const handleLogout = async () => {
-    await signOut();
-    const ws = getWebSocketInstance();
-    const message: UserMessage = {
-      type: MessageType.LOGOUT,
-      sender: {
-        userId: session?.user?.userId!,
-        email: session?.user?.email!,
-        name: session?.user?.name!,
-      },
-    };
-    try {
-      ws.send(JSON.stringify(message));
-    } catch (error) {
-      console.error("Error sending logout message: ", error);
-    }
-  };
   return (
     <nav className="py-4 px-4 sm:px-8 lg:px-16 w-full">
       <div className="flex justify-between items-center">
@@ -48,7 +30,11 @@ const Navbar = () => {
               </Button>
               <Tooltip>
                 <TooltipTrigger>
-                  <Button asChild variant="outline" onClick={handleLogout}>
+                  <Button
+                    asChild
+                    variant="outline"
+                    onClick={() => handleLogout(session)}
+                  >
                     <Link href="/api/auth/signout">
                       <Avatar className="mr-2 h-8 w-8">
                         <AvatarImage
