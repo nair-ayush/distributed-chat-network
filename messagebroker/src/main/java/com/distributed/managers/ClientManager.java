@@ -20,12 +20,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ClientManager extends WebSocketServer {
   private int port;
+  private int lbPort;
+  private String lbHost;
   private Socket lbSocket;
   private ObjectOutputStream lbStream;
 
-  public ClientManager(int port) {
-    super(new InetSocketAddress(port));
-    this.port = port;
+  public ClientManager(int brokerPort, String lbHost, int lbPort) {
+    super(new InetSocketAddress(brokerPort));
+    this.port = brokerPort;
+    this.lbHost = lbHost;
+    this.lbPort = lbPort;
   }
 
   @Override
@@ -82,17 +86,8 @@ public class ClientManager extends WebSocketServer {
   public void onStart() {
     System.out.println("WebSocketServer started on " + port);
     try {
-      String loadBalancerHost = System.getenv("LOAD_BALANCER_HOST");
-      String defaultLBHost = "localhost";
-      int loadBalancerPort = Integer.parseInt(System.getenv("LOAD_BALANCER_PORT"));
-      int defaultLBPort = 5002;
-      lbSocket = new Socket(
-          loadBalancerHost.isEmpty()
-              ? defaultLBHost
-              : loadBalancerHost,
-          loadBalancerPort == 0
-              ? defaultLBPort
-              : loadBalancerPort);
+
+      lbSocket = new Socket(this.lbHost, this.lbPort);
       lbStream = new ObjectOutputStream(lbSocket.getOutputStream());
       if (lbSocket.isConnected()) {
         System.out.println(
