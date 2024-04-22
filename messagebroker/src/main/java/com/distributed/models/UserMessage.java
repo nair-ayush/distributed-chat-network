@@ -24,6 +24,6 @@ public class UserMessage extends Message {
 
   @Override
   public String toString() {
-    return "UserMessage [payload=" + payload + "]";
+    return "UserMessage [payload=" + payload + ", type=" + this.getType() + "]";
   }
 }
