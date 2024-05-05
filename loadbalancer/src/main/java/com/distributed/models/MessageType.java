@@ -7,4 +7,6 @@ public enum MessageType {
   CHAT_MESSAGE,
   SERVER_JOINED,
   SERVER_EXITED,
+  FRIEND_MESSAGE,
+  GET_FRIENDS,
 }

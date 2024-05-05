@@ -1,6 +1,7 @@
 package com.distributed;
 
 import com.distributed.managers.ClientManager;
+import com.distributed.managers.ServerManager;
 
 /**
  * Hello world!
@@ -9,6 +10,15 @@ import com.distributed.managers.ClientManager;
 public class App {
     public static void main(String[] args) {
         System.out.println("----------------------------------");
+        int serverPort = Integer.parseInt(System.getenv("BROKER_SERVER_PORT"));
+        int defaultServerPort = 5003;
+
+        ServerManager sM = new ServerManager(
+                (serverPort == 0)
+                        ? defaultServerPort
+                        : serverPort);
+        new Thread(sM).start();
+
         int brokerPort = Integer.parseInt(System.getenv("BROKER_PORT"));
         int defaultBrokerPort = 5001;
 

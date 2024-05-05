@@ -30,3 +30,29 @@ export const handleLogout = (session: Session) => {
   closeWebSocket();
   signOut();
 };
+
+export const addFriend = (session: Session, email: string) => {
+  const message: UserMessage = {
+    type: MessageType.FRIEND_REQUEST,
+    payload: email,
+    sender: {
+      userId: session?.user.userId!,
+      email: session?.user.email!,
+      name: session?.user.name!,
+    },
+  };
+  sendMessage(JSON.stringify(message));
+};
+
+export const getFriends = (session: Session) => {
+  const message: UserMessage = {
+    type: MessageType.GET_FRIENDS,
+    payload: "",
+    sender: {
+      userId: session?.user.userId!,
+      email: session?.user.email!,
+      name: session?.user.name!,
+    },
+  };
+  sendMessage(JSON.stringify(message));
+};

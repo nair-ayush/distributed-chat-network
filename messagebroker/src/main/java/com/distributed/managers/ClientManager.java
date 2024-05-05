@@ -52,7 +52,6 @@ public class ClientManager extends WebSocketServer {
     try {
       Message msg = mapper.readValue(message, Message.class);
       switch (msg.getType()) {
-        case REGISTER:
         case LOGIN:
         case LOGOUT:
           UserMessage uMsg = mapper.readValue(message, UserMessage.class);
@@ -64,6 +63,13 @@ public class ClientManager extends WebSocketServer {
           ChatMessage cMsg = mapper.readValue(message, ChatMessage.class);
           System.out.println(cMsg);
           System.out.println("Valid type");
+          break;
+
+        case FRIEND_MESSAGE:
+        case GET_FRIENDS:
+          UserMessage fMsg = mapper.readValue(message, UserMessage.class);
+          System.out.println(fMsg);
+          handleFriendMessage(conn, fMsg);
           break;
 
         default:
@@ -116,6 +122,16 @@ public class ClientManager extends WebSocketServer {
       lbStream.reset();
     } catch (IOException e) {
       System.out.println("Error sending message to load balancer: " + e.getMessage());
+    }
+  }
+
+  private void handleFriendMessage(WebSocket conn, UserMessage fMsg) {
+    try {
+      lbStream.writeObject(fMsg);
+      lbStream.flush();
+      lbStream.reset();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
   }
 }

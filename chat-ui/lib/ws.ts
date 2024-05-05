@@ -33,3 +33,7 @@ export const closeWebSocket = () => {
 export const isWebSocketInitialized = (): boolean => {
   return ws && ws.readyState === ws.OPEN;
 };
+
+export const getWebSocket = (): WebSocket => {
+  return ws;
+};

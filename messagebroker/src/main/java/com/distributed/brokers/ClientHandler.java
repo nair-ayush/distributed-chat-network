@@ -10,6 +10,7 @@ import org.java_websocket.WebSocket;
 
 import com.distributed.models.ChatMessage;
 import com.distributed.models.ClientState;
+import com.distributed.models.FriendMessage;
 import com.distributed.models.Message;
 import com.distributed.models.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -59,6 +60,19 @@ public class ClientHandler implements Runnable {
       state = ClientState.INACTIVE;
     } finally {
       sockLock.unlock();
+    }
+  }
+
+  public void sendFriendResponse(FriendMessage msg) {
+    ObjectMapper mapper = new ObjectMapper();
+    try {
+      String messageJson = mapper.writeValueAsString(msg);
+      sockLock.lock();
+      webSocket.send(messageJson);
+      System.out.println("Sent friend response to UI: " + user.getEmail());
+      sockLock.unlock();
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 

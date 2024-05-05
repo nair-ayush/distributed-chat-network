@@ -34,10 +34,10 @@ public class ClientCache {
     }
   }
 
-  public ClientHandler getClient(String username) {
+  public ClientHandler getClient(String email) {
     cacheLock.lock();
     try {
-      return clientCache.get(username);
+      return clientCache.get(email);
     } catch (Exception e) {
       System.out.println("Client not found" + e.getMessage());
       return null;

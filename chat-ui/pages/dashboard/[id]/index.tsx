@@ -1,16 +1,21 @@
+import ChatInput from "@/components/chat-input";
 import Navbar from "@/components/navbar";
 import NewConnectionBtn from "@/components/new-connection-btn";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { getFriends } from "@/lib/auth";
 import { friendsAtom } from "@/lib/state";
+import clsx from "clsx";
 import { useAtomValue } from "jotai";
 import { PlusCircleIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 export default function Dashboard() {
+  const router = useRouter();
+  const { id } = router.query;
   const { data: session } = useSession();
   const friends = useAtomValue(friendsAtom);
   useEffect(() => {
@@ -28,7 +33,10 @@ export default function Dashboard() {
               key={f.userId}
               variant="ghost"
               size="sm"
-              className="text-left justify-start"
+              className={clsx(
+                "text-left justify-start",
+                id === f.email && "font-bold"
+              )}
             >
               <Link href={`/dashboard/${f.email}`} className="hover:underline">
                 {f.name}
@@ -36,7 +44,6 @@ export default function Dashboard() {
             </Button>
           ))}
         </div>
-        q
         <div className="mt-auto flex flex-col">
           <Separator className="my-2" />
           <NewConnectionBtn />
@@ -47,10 +54,10 @@ export default function Dashboard() {
       </aside>
       <section className="flex flex-col flex-grow">
         <Navbar />
-        {/* <div className="flex-grow px-8 py-4">Chat</div>
+        <div className="flex-grow px-8 py-4">Chat</div>
         <div className="px-8 py-4 flex flex-col justify-end">
           <ChatInput />
-        </div> */}
+        </div>
       </section>
     </div>
   );
