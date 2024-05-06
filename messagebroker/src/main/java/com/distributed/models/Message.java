@@ -3,15 +3,19 @@ package com.distributed.models;
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonSubTypes(@JsonSubTypes.Type(value = UserMessage.class, name = "UserMessage"))
+// @JsonSubTypes({
+// @JsonSubTypes.Type(ChatMessage.class),
+// @JsonSubTypes.Type(UserMessage.class),
+// @JsonSubTypes.Type(FriendMessage.class),
+// })
 public class Message implements Serializable {
   private User sender;
   private MessageType type;
+  private static final long serialVersionUID = 1L;
 
   public Message(User sender, MessageType type) {
     this.sender = sender;

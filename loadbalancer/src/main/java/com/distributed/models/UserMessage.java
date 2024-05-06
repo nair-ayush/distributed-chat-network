@@ -2,6 +2,7 @@ package com.distributed.models;
 
 public class UserMessage extends Message {
   private String payload;
+  private static final long serialVersionUID = 4L;
 
   public UserMessage(User user, MessageType type, String payload) {
     super(user, type);
@@ -9,6 +10,7 @@ public class UserMessage extends Message {
   }
 
   public UserMessage() {
+    super();
   }
 
   public String getPayload() {

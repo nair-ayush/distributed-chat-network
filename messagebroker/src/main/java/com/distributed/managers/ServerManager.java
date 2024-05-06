@@ -25,7 +25,8 @@ public class ServerManager implements Runnable {
     while (true) {
       try {
         socket = serverSocket.accept();
-        System.out.println("Server connected");
+        System.out.println("MessageBroker : Server connected");
+        System.out.println("----------------------------------");
       } catch (IOException e) {
         System.out.println("I/O error: " + e);
       }

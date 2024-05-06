@@ -1,4 +1,5 @@
 import Layout from "@/components/layout";
+import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 import "@/styles/globals.css";
@@ -16,6 +17,7 @@ export default function App({
           <Component {...pageProps} />
         </Layout>
       </TooltipProvider>
+      <Toaster />
     </SessionProvider>
   );
 }

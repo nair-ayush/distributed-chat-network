@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserMessage extends Message {
   private String payload;
+  private static final long serialVersionUID = 4L;
 
   public UserMessage(User user, MessageType type, String payload) {
     super(user, type);
@@ -12,6 +13,7 @@ public class UserMessage extends Message {
   }
 
   public UserMessage() {
+    super();
   }
 
   public String getPayload() {
@@ -24,6 +26,6 @@ public class UserMessage extends Message {
 
   @Override
   public String toString() {
-    return "UserMessage [payload=" + payload + ", type=" + this.getType() + "]";
+    return "UserMessage [type=" + this.getType() + ", payload=" + payload + "]";
   }
 }

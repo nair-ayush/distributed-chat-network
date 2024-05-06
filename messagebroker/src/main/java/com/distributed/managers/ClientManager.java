@@ -34,42 +34,44 @@ public class ClientManager extends WebSocketServer {
 
   @Override
   public void onOpen(WebSocket conn, ClientHandshake handshake) {
-    System.out.println("New connection from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
+    System.out
+        .println("MessageBroker : New connection from " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
   }
 
   @Override
   public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-    System.out.println("Connection closed by " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
+    System.out
+        .println("MessageBroker : Connection closed by " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
   }
 
   @Override
   public void onMessage(WebSocket conn, String message) {
-    // System.out.println(
-    // "Message from " +
-    // conn.getRemoteSocketAddress().getAddress().getHostAddress());
     ObjectMapper mapper = new ObjectMapper();
 
     try {
       Message msg = mapper.readValue(message, Message.class);
+      ChatMessage cMsg;
+      UserMessage uMsg;
+      // FriendMessage fMsg;
       switch (msg.getType()) {
+        case CHAT_MESSAGE:
+          cMsg = mapper.readValue(message, ChatMessage.class);
+          System.out.println(cMsg);
+          handleChatMessage(conn, cMsg);
+          break;
+
         case LOGIN:
         case LOGOUT:
-          UserMessage uMsg = mapper.readValue(message, UserMessage.class);
+          uMsg = mapper.readValue(message, UserMessage.class);
           System.out.println(uMsg);
           handleUserMessage(conn, uMsg);
           break;
 
-        case CHAT_MESSAGE:
-          ChatMessage cMsg = mapper.readValue(message, ChatMessage.class);
-          System.out.println(cMsg);
-          System.out.println("Valid type");
-          break;
-
-        case FRIEND_MESSAGE:
+        case ADD_FRIEND:
         case GET_FRIENDS:
-          UserMessage fMsg = mapper.readValue(message, UserMessage.class);
-          System.out.println(fMsg);
-          handleFriendMessage(conn, fMsg);
+          uMsg = mapper.readValue(message, UserMessage.class);
+          System.out.println(uMsg);
+          handleFriendMessage(conn, uMsg);
           break;
 
         default:
@@ -90,14 +92,15 @@ public class ClientManager extends WebSocketServer {
 
   @Override
   public void onStart() {
-    System.out.println("WebSocketServer started on " + port);
+    System.out.println("MessageBroker : WebSocketServer started on " + port);
     try {
 
       lbSocket = new Socket(this.lbHost, this.lbPort);
       lbStream = new ObjectOutputStream(lbSocket.getOutputStream());
       if (lbSocket.isConnected()) {
         System.out.println(
-            "Connected to Load Balancer at " + lbSocket.getInetAddress().getHostAddress() + ":" + lbSocket.getPort());
+            "MessageBroker : Connected to Load Balancer at " + lbSocket.getInetAddress().getHostAddress() + ":"
+                + lbSocket.getPort());
         System.out.println();
       }
     } catch (UnknownHostException e) {
@@ -125,9 +128,19 @@ public class ClientManager extends WebSocketServer {
     }
   }
 
-  private void handleFriendMessage(WebSocket conn, UserMessage fMsg) {
+  private void handleFriendMessage(WebSocket conn, UserMessage msg) {
     try {
-      lbStream.writeObject(fMsg);
+      lbStream.writeObject(msg);
+      lbStream.flush();
+      lbStream.reset();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private void handleChatMessage(WebSocket conn, ChatMessage msg) {
+    try {
+      lbStream.writeObject(msg);
       lbStream.flush();
       lbStream.reset();
     } catch (IOException e) {

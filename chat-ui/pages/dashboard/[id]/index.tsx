@@ -18,6 +18,7 @@ export default function Dashboard() {
   const { id } = router.query;
   const { data: session } = useSession();
   const friends = useAtomValue(friendsAtom);
+  const recipient = friends.find((f) => f.email === id);
   useEffect(() => {
     getFriends(session!);
   }, []);
@@ -56,7 +57,7 @@ export default function Dashboard() {
         <Navbar />
         <div className="flex-grow px-8 py-4">Chat</div>
         <div className="px-8 py-4 flex flex-col justify-end">
-          <ChatInput />
+          <ChatInput recipient={recipient!} />
         </div>
       </section>
     </div>

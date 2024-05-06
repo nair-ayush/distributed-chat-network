@@ -33,7 +33,7 @@ export const handleLogout = (session: Session) => {
 
 export const addFriend = (session: Session, email: string) => {
   const message: UserMessage = {
-    type: MessageType.FRIEND_REQUEST,
+    type: MessageType.ADD_FRIEND,
     payload: email,
     sender: {
       userId: session?.user.userId!,
@@ -54,5 +54,6 @@ export const getFriends = (session: Session) => {
       name: session?.user.name!,
     },
   };
+  console.log(JSON.stringify(message, null, 2));
   sendMessage(JSON.stringify(message));
 };

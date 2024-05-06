@@ -36,7 +36,6 @@ export default function Dashboard() {
             </Button>
           ))}
         </div>
-        q
         <div className="mt-auto flex flex-col">
           <Separator className="my-2" />
           <NewConnectionBtn />

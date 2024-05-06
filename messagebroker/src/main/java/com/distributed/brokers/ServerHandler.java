@@ -3,7 +3,9 @@ package com.distributed.brokers;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
+import com.distributed.models.ChatMessage;
 import com.distributed.models.FriendMessage;
 import com.distributed.models.Message;
 import com.distributed.models.User;
@@ -27,13 +29,35 @@ public class ServerHandler implements Runnable {
     while (true) {
       try {
         Message msg = (Message) inStream.readObject();
-        System.out.println("Received message: " + msg.getType());
+        if (msg == null) {
+          socket.close();
+          return;
+        }
+
         User sender = msg.getSender();
+        ClientCache cache = ClientCache.getInstance();
         switch (msg.getType()) {
-          case GOT_FRIENDS:
-            ClientCache cache = ClientCache.getInstance();
+          case GET_FRIENDS_SUCCESS:
+          case ADD_FRIEND_SUCCESS:
+          case ADD_FRIEND_FAILURE:
             ClientHandler cH = cache.getClient(sender.getEmail());
             cH.sendFriendResponse((FriendMessage) msg);
+            break;
+
+          case CHAT_MESSAGE:
+            ChatMessage cMsg = (ChatMessage) msg;
+            System.out.println("MessageBroker : Server (Chat):: " + cMsg);
+            ArrayList<User> receivers = new ArrayList<User>();
+            receivers.add(cMsg.getReceiver());
+            receivers.add(cMsg.getSender());
+            for (User receiver : receivers) {
+              ClientHandler cHandler = cache.getClient(receiver.getEmail());
+              if (cHandler == null) {
+                cache.addClient(receiver.getEmail(), new ClientHandler(receiver));
+                cHandler = cache.getClient(receiver.getEmail());
+              }
+              cHandler.sendChatMessage(cMsg);
+            }
             break;
 
           default:

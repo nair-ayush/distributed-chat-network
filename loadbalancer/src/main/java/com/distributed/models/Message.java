@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class Message implements Serializable {
   private User sender;
   private MessageType type;
+  private static final long serialVersionUID = 1L;
 
   public Message(User sender, MessageType type) {
     this.sender = sender;

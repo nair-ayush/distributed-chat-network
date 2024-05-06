@@ -38,7 +38,7 @@ public class BrokerHandler {
   }
 
   public void send(Message msg) {
-    System.out.println("Sending message to broker" + msg.getSender().getEmail());
+    System.out.println("Sending message to broker " + msg.getSender().getEmail());
     try {
       brokerOutputStream.writeObject(msg);
       brokerOutputStream.flush();

@@ -22,6 +22,8 @@ public class ClientHandler implements Runnable {
   private static final int CAPACITY = 1000;
   private Queue<Message> mQ;
 
+  private volatile boolean stop = false;
+
   private final Lock qLock = new ReentrantLock();
   private final Lock sockLock = new ReentrantLock();
   private final Condition queueNotFull = qLock.newCondition();
@@ -43,24 +45,18 @@ public class ClientHandler implements Runnable {
 
   public void setWebSocket(WebSocket webSocket) {
     sockLock.lock();
-    try {
-      this.webSocket = webSocket;
-      state = ClientState.ACTIVE;
-      sockActive.signalAll();
-    } finally {
-      sockLock.unlock();
-    }
+    this.webSocket = webSocket;
+    state = ClientState.ACTIVE;
+    sockActive.signalAll();
+    sockLock.unlock();
   }
 
   public void removeWebSocket() {
     sockLock.lock();
-    try {
-      this.webSocket.close();
-      this.webSocket = null;
-      state = ClientState.INACTIVE;
-    } finally {
-      sockLock.unlock();
-    }
+    this.webSocket.close();
+    this.webSocket = null;
+    state = ClientState.INACTIVE;
+    sockLock.unlock();
   }
 
   public void sendFriendResponse(FriendMessage msg) {
@@ -69,20 +65,41 @@ public class ClientHandler implements Runnable {
       String messageJson = mapper.writeValueAsString(msg);
       sockLock.lock();
       webSocket.send(messageJson);
-      System.out.println("Sent friend response to UI: " + user.getEmail());
+      System.out.println("\tSent response to client: " + user.getEmail());
       sockLock.unlock();
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
+  public void sendChatMessage(ChatMessage msg) {
+    qLock.lock();
+    try {
+      while (mQ.size() == CAPACITY) {
+        queueNotEmpty.await();
+      }
+      mQ.offer(msg);
+      System.out.println(mQ.size() + " messages in queue for: " + user.getEmail());
+      queueNotFull.signalAll();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    } finally {
+      qLock.unlock();
+    }
+  }
+
+  public void stop() {
+    stop = true;
+  }
+
   @Override
   public void run() {
     ObjectMapper mapper = new ObjectMapper();
-    while (true) {
+    while (!stop) {
+      System.out.println("ClientHandler running for: " + user.getEmail());
       qLock.lock();
       try {
-        while (mQ.isEmpty()) {
+        while (mQ.size() == 0) {
           queueNotFull.await();
         }
         sockLock.lock();
@@ -91,9 +108,9 @@ public class ClientHandler implements Runnable {
         }
 
         ChatMessage cMsg = (ChatMessage) mQ.element();
-
         if (webSocket != null) {
           String messageJson = mapper.writeValueAsString(cMsg);
+          System.out.println("Sent chat message to UI: " + user.getEmail());
           webSocket.send(messageJson);
           mQ.poll();
         }

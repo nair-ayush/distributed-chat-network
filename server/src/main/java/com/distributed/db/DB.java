@@ -79,4 +79,25 @@ public class DB {
     }
     return friends;
   }
+
+  public void addChatMessage(String senderEmail, String receiverEmail, String message, long timestamp) {
+    MongoCollection<Document> col = database.getCollection("chats");
+    // create string key using sender and receiver emails to ensure uniqueness
+    String key = senderEmail.compareTo(receiverEmail) < 0 ? senderEmail + "|" + receiverEmail
+        : receiverEmail + "|" + senderEmail;
+    // check if document exists
+    Document doc = col.find(eq("key", key)).first();
+    Document messageDoc = new Document("sender", senderEmail)
+        .append("message", message)
+        .append("timestamp", timestamp);
+    if (doc == null) {
+      ArrayList<Document> messages = new ArrayList<Document>();
+      messages.add(messageDoc);
+      doc = new Document("key", key)
+          .append("messages", messages);
+      col.insertOne(doc);
+    } else {
+      col.updateOne(eq("key", key), Updates.push("messages", messageDoc));
+    }
+  }
 }

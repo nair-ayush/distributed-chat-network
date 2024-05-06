@@ -7,6 +7,7 @@ public class User implements Serializable {
   private String email;
   private String userId;
   private String name;
+  private static final long serialVersionUID = 6L;
 
   public User(String email, String userId, String name) {
     this.email = email;

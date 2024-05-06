@@ -50,27 +50,31 @@ public class BalancerHandler implements Runnable {
       inStream = new ObjectInputStream(socket.getInputStream());
       while (true) {
         Message msg = (Message) inStream.readObject();
+        UserMessage uMsg;
         switch (msg.getType()) {
           case CHAT_MESSAGE:
             ChatMessage cMsg = (ChatMessage) msg;
             System.out.println(cMsg);
+            handleChatMessage(cMsg);
             break;
+
           case LOGIN:
           case LOGOUT:
-          case REGISTER:
-            UserMessage uMsg = (UserMessage) msg;
+            uMsg = (UserMessage) msg;
             System.out.println(uMsg);
             handleAuthentication(uMsg);
             break;
-          case FRIEND_MESSAGE:
-            UserMessage fMsg = (UserMessage) msg;
-            System.out.println(fMsg);
-            handleFriendMessage(fMsg);
-            break;
+
           case GET_FRIENDS:
-            UserMessage gMsg = (UserMessage) msg;
-            System.out.println(gMsg);
-            handleGetFriends(gMsg);
+            uMsg = (UserMessage) msg;
+            System.out.println(uMsg);
+            handleGetFriends(uMsg);
+            break;
+
+          case ADD_FRIEND:
+            uMsg = (UserMessage) msg;
+            System.out.println(uMsg);
+            handleAddFriend(uMsg);
             break;
           default:
             break;
@@ -113,20 +117,29 @@ public class BalancerHandler implements Runnable {
   private void handleGetFriends(UserMessage msg) {
     User user = msg.getSender();
     ArrayList<User> friends = db.getFriends(user.getEmail());
-    FriendMessage response = new FriendMessage(user, friends, MessageType.GOT_FRIENDS);
+    FriendMessage response = new FriendMessage(user, friends, MessageType.GET_FRIENDS_SUCCESS);
     brokerHandler.send(response);
   }
 
-  private void handleFriendMessage(UserMessage msg) {
-    // handle friend message
+  private void handleAddFriend(UserMessage msg) {
     User user = msg.getSender();
-    String receiverEmail = msg.getPayload();
-    if (db.doesEmailExist(receiverEmail)) {
-      db.addFriend(user.getEmail(), receiverEmail);
-      handleGetFriends(msg);
+    String friendEmail = msg.getPayload();
+    FriendMessage response;
+    if (db.doesEmailExist(friendEmail)) {
+      db.addFriend(user.getEmail(), friendEmail);
+      ArrayList<User> friends = db.getFriends(user.getEmail());
+      response = new FriendMessage(user, friends, MessageType.ADD_FRIEND_SUCCESS);
     } else {
-      System.out.println("Friend not found");
+      response = new FriendMessage(user, "Email does not exist", MessageType.ADD_FRIEND_FAILURE);
     }
+    brokerHandler.send(response);
+  }
+
+  private void handleChatMessage(ChatMessage msg) {
+    long timestamp = System.currentTimeMillis();
+    msg.setTimestamp(timestamp);
+    db.addChatMessage(msg.getSender().getEmail(), msg.getReceiver().getEmail(), msg.getPayload(), timestamp);
+    brokerHandler.send(msg);
   }
 
 }

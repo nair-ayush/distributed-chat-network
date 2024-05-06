@@ -1,12 +1,17 @@
 package com.distributed.models;
 
 public enum MessageType {
-  REGISTER,
   LOGIN,
   LOGOUT,
+
   CHAT_MESSAGE,
-  SERVER_LEFT,
-  FRIEND_MESSAGE,
+
+  ADD_FRIEND,
+  ADD_FRIEND_SUCCESS,
+  ADD_FRIEND_FAILURE,
+
   GET_FRIENDS,
-  GOT_FRIENDS
+  GET_FRIENDS_SUCCESS,
+
+  SERVER_LEFT,
 }

@@ -3,7 +3,6 @@ package com.distributed.balancers;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -73,6 +72,7 @@ public class ServerCache {
     serverCache = new HashMap<Integer, ServerHandler>();
   }
 
+  @SuppressWarnings("unlikely-arg-type")
   public void removeServer(String socketAddress) {
     int exitedNodeID = -1;
     if (serverCache.containsValue(socketAddress)) {
@@ -89,12 +89,14 @@ public class ServerCache {
     }
   }
 
+  @SuppressWarnings("unlikely-arg-type")
   public void heartBeatListener(ServerMessage sMsg, String socketAddress) {
     if (serverCache.containsValue(socketAddress)) {
       if (sMsg.getType().equals(MessageType.SERVER_JOINED)) {
         addServer(new ServerHandler(sMsg.getMessage()));
       } else if (sMsg.getType().equals(MessageType.SERVER_EXITED)) {
-        long timeSeconds = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
+        // long timeSeconds =
+        // TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
         int statusSoFar = serverStatus.get(sMsg.getMessage());
         if (statusSoFar == serverCache.size() - 1) {
           removeServer(sMsg.getMessage());
