@@ -4,6 +4,7 @@ import NewConnectionBtn from "@/components/new-connection-btn";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { getFriends } from "@/lib/auth";
+import { getChatMessages } from "@/lib/chat";
 import { friendsAtom } from "@/lib/state";
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
@@ -19,9 +20,11 @@ export default function Dashboard() {
   const { data: session } = useSession();
   const friends = useAtomValue(friendsAtom);
   const recipient = friends.find((f) => f.email === id);
+
   useEffect(() => {
     getFriends(session!);
-  }, []);
+    getChatMessages(session!, recipient!);
+  }, [id, session]);
 
   return (
     <div className="min-h-screen flex">

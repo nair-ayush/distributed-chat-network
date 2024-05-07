@@ -1,4 +1,6 @@
 export enum MessageType {
+  GET_CHAT = "GET_CHAT_MESSAGES",
+  GET_CHAT_SUCCESS = "GET_CHAT_MESSAGES_SUCCESS",
   CHAT = "CHAT_MESSAGE",
   LOGIN = "LOGIN",
   LOGOUT = "LOGOUT",
@@ -21,10 +23,10 @@ export type ChatItem = {
   timestamp: number;
 };
 
-export type Chat = {
-  users: User[];
-  messages: ChatItem[];
-  id?: string;
+export type Chat = Message & {
+  type: MessageType.GET_CHAT_SUCCESS;
+  messages?: ChatItem[];
+  key?: string;
 };
 
 export type Message = {
@@ -51,7 +53,7 @@ export type UserMessage = Message & {
 };
 
 export type ChatMessage = Message & {
-  type: MessageType.CHAT;
+  type: MessageType.CHAT | MessageType.GET_CHAT;
   payload: string;
   receiver: User;
 };

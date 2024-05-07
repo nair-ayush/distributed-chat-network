@@ -20,3 +20,18 @@ export const sendChatMessage = (
   console.log(JSON.stringify(message, null, 2));
   sendMessage(JSON.stringify(message));
 };
+
+export const getChatMessages = async (session: Session, receiver: User) => {
+  const message: ChatMessage = {
+    type: MessageType.GET_CHAT,
+    receiver,
+    payload: "",
+    sender: {
+      userId: session?.user.email!,
+      email: session?.user.email!,
+      name: session?.user.name!,
+    },
+  };
+  console.log(JSON.stringify(message, null, 2));
+  sendMessage(JSON.stringify(message));
+};

@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import com.distributed.db.DB;
+import com.distributed.models.Chat;
 import com.distributed.models.ChatMessage;
 import com.distributed.models.FriendMessage;
 import com.distributed.models.Message;
@@ -53,6 +54,7 @@ public class BalancerHandler implements Runnable {
         UserMessage uMsg;
         switch (msg.getType()) {
           case CHAT_MESSAGE:
+          case GET_CHAT_MESSAGES:
             ChatMessage cMsg = (ChatMessage) msg;
             System.out.println(cMsg);
             handleChatMessage(cMsg);
@@ -136,6 +138,13 @@ public class BalancerHandler implements Runnable {
   }
 
   private void handleChatMessage(ChatMessage msg) {
+    if (msg.getType() == MessageType.GET_CHAT_MESSAGES) {
+      Chat chat = db.getChat(msg.getSender().getEmail(), msg.getReceiver().getEmail());
+      chat.setType(MessageType.GET_CHAT_MESSAGES_SUCCESS);
+      chat.setSender(msg.getSender());
+      brokerHandler.send(chat);
+      return;
+    }
     long timestamp = System.currentTimeMillis();
     msg.setTimestamp(timestamp);
     db.addChatMessage(msg.getSender().getEmail(), msg.getReceiver().getEmail(), msg.getPayload(), timestamp);

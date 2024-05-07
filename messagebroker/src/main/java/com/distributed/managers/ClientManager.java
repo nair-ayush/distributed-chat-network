@@ -42,6 +42,8 @@ public class ClientManager extends WebSocketServer {
   public void onClose(WebSocket conn, int code, String reason, boolean remote) {
     System.out
         .println("MessageBroker : Connection closed by " + conn.getRemoteSocketAddress().getAddress().getHostAddress());
+    ClientCache cache = ClientCache.getInstance();
+    cache.removeClient(conn.getRemoteSocketAddress().getAddress().getHostAddress());
   }
 
   @Override
@@ -55,6 +57,7 @@ public class ClientManager extends WebSocketServer {
       // FriendMessage fMsg;
       switch (msg.getType()) {
         case CHAT_MESSAGE:
+        case GET_CHAT_MESSAGES:
           cMsg = mapper.readValue(message, ChatMessage.class);
           System.out.println(cMsg);
           handleChatMessage(conn, cMsg);
@@ -116,7 +119,8 @@ public class ClientManager extends WebSocketServer {
       ClientHandler client = cache.getClient(uMsg.getSender().getEmail());
       if (client == null) {
         client = new ClientHandler(uMsg.getSender(), conn);
-        cache.addClient(uMsg.getSender().getEmail(), client);
+        cache.addClient(uMsg.getSender().getEmail(), client,
+            conn.getRemoteSocketAddress().getAddress().getHostAddress());
       } else {
         client.setWebSocket(conn);
       }

@@ -5,6 +5,7 @@ public enum MessageType {
   LOGOUT,
 
   CHAT_MESSAGE,
+  GET_CHAT_MESSAGES,
 
   ADD_FRIEND,
   GET_FRIENDS,

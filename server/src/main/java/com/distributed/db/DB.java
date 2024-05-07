@@ -7,6 +7,8 @@ import java.util.Date;
 
 import org.bson.Document;
 
+import com.distributed.models.Chat;
+import com.distributed.models.ChatItem;
 import com.distributed.models.User;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -99,5 +101,23 @@ public class DB {
     } else {
       col.updateOne(eq("key", key), Updates.push("messages", messageDoc));
     }
+  }
+
+  public Chat getChat(String senderEmail, String receiverEmail) {
+    MongoCollection<Document> col = database.getCollection("chats");
+    String key = senderEmail.compareTo(receiverEmail) < 0 ? senderEmail + "|" + receiverEmail
+        : receiverEmail + "|" + senderEmail;
+    Document doc = col.find(eq("key", key)).first();
+    if (doc == null) {
+      return new Chat(key, new ArrayList<ChatItem>());
+    }
+    // convert messages to ChatItem objects and return Chat object
+    ArrayList<Document> messages = (ArrayList<Document>) doc.get("messages");
+    ArrayList<ChatItem> chatItems = new ArrayList<ChatItem>();
+    for (Document message : messages) {
+      chatItems
+          .add(new ChatItem(message.getString("message"), message.getString("sender"), message.getLong("timestamp")));
+    }
+    return new Chat(key, chatItems);
   }
 }

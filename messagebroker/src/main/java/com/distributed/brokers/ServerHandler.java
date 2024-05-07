@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import com.distributed.models.Chat;
 import com.distributed.models.ChatMessage;
 import com.distributed.models.FriendMessage;
 import com.distributed.models.Message;
@@ -53,11 +54,19 @@ public class ServerHandler implements Runnable {
             for (User receiver : receivers) {
               ClientHandler cHandler = cache.getClient(receiver.getEmail());
               if (cHandler == null) {
-                cache.addClient(receiver.getEmail(), new ClientHandler(receiver));
-                cHandler = cache.getClient(receiver.getEmail());
+                // cache.addClient(receiver.getEmail(), new ClientHandler(receiver));
+                // cHandler = cache.getClient(receiver.getEmail());
+                continue;
               }
               cHandler.sendChatMessage(cMsg);
             }
+            break;
+
+          case GET_CHAT_MESSAGES_SUCCESS:
+            Chat chatMsg = (Chat) msg;
+            System.out.println("MessageBroker : Server (Chat):: " + chatMsg);
+            ClientHandler cHandler = cache.getClient(chatMsg.getSender().getEmail());
+            cHandler.sendChat(chatMsg);
             break;
 
           default:

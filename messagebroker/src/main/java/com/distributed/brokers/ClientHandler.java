@@ -7,7 +7,9 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.java_websocket.WebSocket;
+import org.java_websocket.exceptions.WebsocketNotConnectedException;
 
+import com.distributed.models.Chat;
 import com.distributed.models.ChatMessage;
 import com.distributed.models.ClientState;
 import com.distributed.models.FriendMessage;
@@ -72,6 +74,19 @@ public class ClientHandler implements Runnable {
     }
   }
 
+  public void sendChat(Chat msg) {
+    ObjectMapper mapper = new ObjectMapper();
+    try {
+      String messageJson = mapper.writeValueAsString(msg);
+      sockLock.lock();
+      webSocket.send(messageJson);
+      System.out.println("\tSent chat to client: " + user.getEmail());
+      sockLock.unlock();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
   public void sendChatMessage(ChatMessage msg) {
     qLock.lock();
     try {
@@ -111,10 +126,14 @@ public class ClientHandler implements Runnable {
         if (webSocket != null) {
           String messageJson = mapper.writeValueAsString(cMsg);
           System.out.println("Sent chat message to UI: " + user.getEmail());
-          webSocket.send(messageJson);
-          mQ.poll();
+          try {
+            webSocket.send(messageJson);
+            mQ.poll();
+            queueNotEmpty.signalAll();
+          } catch (WebsocketNotConnectedException e) {
+            removeWebSocket();
+          }
         }
-        queueNotEmpty.signalAll();
       } catch (InterruptedException e) {
         e.printStackTrace();
       } catch (Exception e) {

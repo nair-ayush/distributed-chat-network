@@ -1,6 +1,7 @@
 import { handleLogin } from "@/lib/auth";
 import { friendsAtom } from "@/lib/state";
 import {
+  Chat,
   ChatMessage,
   FriendMessage,
   Message,
@@ -44,6 +45,11 @@ const Layout = ({ children }: PropsWithChildren) => {
         case MessageType.CHAT:
           const cMsg = msg as ChatMessage;
           console.log("Received chat message:", cMsg);
+          break;
+
+        case MessageType.GET_CHAT_SUCCESS:
+          const cMsg3 = msg as Chat;
+          console.log("Received chat:", cMsg3);
           break;
 
         default:
