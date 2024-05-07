@@ -24,9 +24,14 @@ export default function ChatInput({ recipient }: Props) {
     event
   ) => {
     if (event.key === "Enter") {
-      sendChatMessage(session!, message, recipient);
+      sendChatMessage(session!, message.trim(), recipient);
       setMessage("");
     }
+  };
+
+  const handleSubmit: React.MouseEventHandler<HTMLButtonElement> = () => {
+    sendChatMessage(session!, message.trim(), recipient);
+    setMessage("");
   };
 
   return (
@@ -38,7 +43,12 @@ export default function ChatInput({ recipient }: Props) {
         onChange={handleMessageChange}
         onKeyDown={handleMessageKeyDown}
       />
-      <Button type="submit" variant="secondary" size="icon">
+      <Button
+        type="submit"
+        variant="secondary"
+        size="icon"
+        onClick={handleSubmit}
+      >
         <SendIcon />
       </Button>
     </div>

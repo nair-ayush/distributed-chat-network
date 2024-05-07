@@ -18,7 +18,7 @@ export type User = {
 };
 
 export type ChatItem = {
-  sender: User;
+  sender: string;
   message: string;
   timestamp: number;
 };

@@ -17,7 +17,6 @@ export const sendChatMessage = (
       name: session?.user.name!,
     },
   };
-  console.log(JSON.stringify(message, null, 2));
   sendMessage(JSON.stringify(message));
 };
 
@@ -32,6 +31,5 @@ export const getChatMessages = async (session: Session, receiver: User) => {
       name: session?.user.name!,
     },
   };
-  console.log(JSON.stringify(message, null, 2));
   sendMessage(JSON.stringify(message));
 };

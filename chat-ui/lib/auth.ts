@@ -54,6 +54,5 @@ export const getFriends = (session: Session) => {
       name: session?.user.name!,
     },
   };
-  console.log(JSON.stringify(message, null, 2));
   sendMessage(JSON.stringify(message));
 };

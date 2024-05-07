@@ -23,11 +23,6 @@ const Navbar = () => {
                   Dashboard
                 </Link>
               </Button>
-              <Button asChild variant="ghost">
-                <Link href="/connections" className="hover:underline">
-                  Connections
-                </Link>
-              </Button>
               <Tooltip>
                 <TooltipTrigger>
                   <Button
