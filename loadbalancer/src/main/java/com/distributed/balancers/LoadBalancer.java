@@ -31,9 +31,9 @@ public class LoadBalancer extends Thread {
       }
 
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      System.out.println("LoadBalancer.java : Client disconnected");
     } catch (ClassNotFoundException e) {
-      throw new RuntimeException(e);
+      System.out.println("LoadBalancer.java : Client disconnected");
     }
   }
 

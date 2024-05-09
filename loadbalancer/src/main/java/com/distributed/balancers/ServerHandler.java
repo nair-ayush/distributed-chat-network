@@ -46,13 +46,15 @@ public class ServerHandler extends Thread {
       throw new RuntimeException(e);
     }
 
-    while (true) {
-      try {
+    try {
+      while (true) {
         ServerMessage sMsg = (ServerMessage) inStream.readObject();
         System.out.println(sMsg);
-      } catch (ClassNotFoundException | IOException e) {
-        throw new RuntimeException("Something went wrong: Server " + getServerAddress() + " disconnected");
+        ServerCache.getInstance().heartBeatListener(sMsg, socket.getInetAddress().getHostAddress());
       }
+    } catch (ClassNotFoundException | IOException e) {
+      // TODO Auto-generated catch block
+      System.out.println("Serverhandler : Server disconnected");
     }
   }
 

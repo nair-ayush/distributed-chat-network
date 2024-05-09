@@ -27,8 +27,8 @@ public class ServerHandler implements Runnable {
       e.printStackTrace();
     }
 
-    while (true) {
-      try {
+    try {
+      while (true) {
         Message msg = (Message) inStream.readObject();
         if (msg == null) {
           socket.close();
@@ -73,11 +73,14 @@ public class ServerHandler implements Runnable {
             break;
         }
 
-      } catch (IOException e) {
-        e.printStackTrace();
-      } catch (ClassNotFoundException e) {
-        e.printStackTrace();
       }
+    } catch (IOException e) {
+      System.out.println("ServerHandler : Server disconnected");
+      e.printStackTrace();
+    } catch (ClassNotFoundException e) {
+      System.out.println("ServerHandler : Server disconnected");
+      e.printStackTrace();
     }
+
   }
 }

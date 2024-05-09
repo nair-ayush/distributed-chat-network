@@ -95,8 +95,7 @@ public class ServerCache {
       if (sMsg.getType().equals(MessageType.SERVER_JOINED)) {
         addServer(new ServerHandler(sMsg.getMessage()));
       } else if (sMsg.getType().equals(MessageType.SERVER_EXITED)) {
-        // long timeSeconds =
-        // TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
+        System.out.println("ServerCache : Server exited");
         int statusSoFar = serverStatus.get(sMsg.getMessage());
         if (statusSoFar == serverCache.size() - 1) {
           removeServer(sMsg.getMessage());
