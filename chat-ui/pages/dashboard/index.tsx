@@ -34,7 +34,7 @@ const Dashboard = () => {
                     <CardTitle className="text-xl">{friend.name}</CardTitle>
                   </CardHeader>
                   <CardFooter className="flex justify-end">
-                    <Button size="sm" variant="default">
+                    <Button asChild size="sm" variant="default">
                       <Link href={`/chat/${friend.email}`}>Chat</Link>
                     </Button>
                   </CardFooter>
